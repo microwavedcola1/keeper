@@ -6,6 +6,8 @@ use anchor_lang::prelude::*;
 #[derive(Default)]
 pub struct Job {
     pub program: Pubkey,
+    pub credits_mint: Pubkey,
     pub ix_tag: u32,
+    // todo padding
 }
-const_assert!(size_of::<Job>() == 32 + 4);
+const_assert!(size_of::<Job>() == 32 + 32 + 4);
