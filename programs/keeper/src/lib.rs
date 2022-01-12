@@ -25,8 +25,9 @@ pub mod keeper {
 
     pub fn perform_job<'key, 'accounts, 'remaining, 'info>(
         ctx: Context<'key, 'accounts, 'remaining, 'info, PerformJob<'info>>,
+        job_bump: u8,
         cpi_data: Vec<u8>,
     ) -> Result<()> {
-        instructions::perform_job(ctx, cpi_data)
+        instructions::perform_job(ctx, job_bump, cpi_data)
     }
 }

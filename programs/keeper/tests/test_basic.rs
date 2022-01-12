@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use anchor_spl::token::TokenAccount;
+use keeper::instructions::perform_job;
 use solana_program::instruction::Instruction;
 use solana_program::pubkey::Pubkey;
 use solana_program_test::*;
@@ -16,28 +17,25 @@ mod program_test;
 async fn test_basic() -> Result<(), TransportError> {
     let context = TestContext::new().await;
 
-    register_job(&context).await;
-
-    Ok(())
-}
-
-async fn register_job(context: &TestContext) {
-    let payer = &context.users[0].key;
-    let mint = context.mints[0].pubkey.unwrap();
-    let token = context.users[0].token_accounts[0];
-
+    /// register job
+    let context_argument = &context;
+    let payer = &context_argument.users[0].key;
+    let mint = context_argument.mints[0].pubkey.unwrap();
+    let token = context_argument.users[0].token_accounts[0];
     let (job, job_bump) = Pubkey::find_program_address(
-        &[&context.keeper_requiring_program.program_id.to_bytes()],
-        &context.keeper.program_id,
+        &[&context_argument
+            .keeper_requiring_program
+            .program_id
+            .to_bytes()],
+        &context_argument.keeper.program_id,
     );
-
     let instructions = vec![Instruction {
-        program_id: context.keeper.program_id,
+        program_id: context_argument.keeper.program_id,
         accounts: anchor_lang::ToAccountMetas::to_account_metas(
             &keeper::accounts::RegisterJob {
                 job,
                 vault: spl_associated_token_account::get_associated_token_address(&job, &mint),
-                program: context.keeper_requiring_program.program_id,
+                program: context_argument.keeper_requiring_program.program_id,
                 deposit_authority: payer.pubkey(),
                 credits_mint: mint,
                 deposit_token: token,
@@ -53,9 +51,46 @@ async fn register_job(context: &TestContext) {
             amount: 100,
         }),
     }];
-    context
+    context_argument
         .solana
         .process_transaction(&instructions, Some(&[payer]))
         .await
         .unwrap();
+
+    /// perform job
+    let context_argument = &context;
+    let payer = &context_argument.users[0].key;
+    let mint = context_argument.mints[0].pubkey.unwrap();
+    let (job, _) = Pubkey::find_program_address(
+        &[&context_argument
+            .keeper_requiring_program
+            .program_id
+            .to_bytes()],
+        &context_argument.keeper.program_id,
+    );
+    let mut cpi_data = Vec::with_capacity(1);
+    cpi_data.push(0u8);
+    let instructions = vec![Instruction {
+        program_id: context_argument.keeper.program_id,
+        accounts: anchor_lang::ToAccountMetas::to_account_metas(
+            &keeper::accounts::PerformJob {
+                job,
+                vault: spl_associated_token_account::get_associated_token_address(&job, &mint),
+                program: context_argument.keeper_requiring_program.program_id,
+                credits_mint: mint,
+            },
+            None,
+        ),
+        data: anchor_lang::InstructionData::data(&keeper::instruction::PerformJob {
+            job_bump,
+            cpi_data,
+        }),
+    }];
+    context_argument
+        .solana
+        .process_transaction(&instructions, Some(&[]))
+        .await
+        .unwrap();
+
+    Ok(())
 }
