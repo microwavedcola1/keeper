@@ -12,7 +12,7 @@ instruction should top-up this vault with credits belonging to a mint of choice.
 - credits are transferred after every job, this is the simplest implementation. Its the responsibility of the job, to verify that it has sufficient calls within a period, and fail redundant calls. This technique also saves having more complex housekeeping and separate distribution of awarded credit.
 
 ## Remaining work
-- top-up credits vault
+- instruction for topping-up credits vault
 - ...
 
 # Development
