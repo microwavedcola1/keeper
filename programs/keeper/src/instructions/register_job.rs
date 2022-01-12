@@ -2,8 +2,7 @@ use std::mem::size_of;
 
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token;
-use anchor_spl::token::{Mint, Token, TokenAccount};
+use anchor_spl::token::{transfer, Mint, Token, TokenAccount, Transfer};
 
 use crate::error::*;
 use crate::state::*;
@@ -48,9 +47,9 @@ pub struct RegisterJob<'info> {
 }
 
 impl<'info> RegisterJob<'info> {
-    pub fn transfer_ctx(&self) -> CpiContext<'_, '_, '_, 'info, token::Transfer<'info>> {
+    pub fn transfer_ctx(&self) -> CpiContext<'_, '_, '_, 'info, Transfer<'info>> {
         let program = self.token_program.to_account_info();
-        let accounts = token::Transfer {
+        let accounts = Transfer {
             from: self.deposit_token.to_account_info(),
             to: self.vault.to_account_info(),
             authority: self.deposit_authority.to_account_info(),
@@ -62,6 +61,6 @@ impl<'info> RegisterJob<'info> {
 pub fn register_job(ctx: Context<RegisterJob>, job_bump: u8, amount: u64) -> Result<()> {
     let job = &mut ctx.accounts.job;
     job.program = ctx.accounts.program.key();
-    token::transfer(ctx.accounts.transfer_ctx(), amount)?;
+    transfer(ctx.accounts.transfer_ctx(), amount)?;
     Ok(())
 }

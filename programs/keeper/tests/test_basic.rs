@@ -16,6 +16,12 @@ mod program_test;
 async fn test_basic() -> Result<(), TransportError> {
     let context = TestContext::new().await;
 
+    register_job(&context).await;
+
+    Ok(())
+}
+
+async fn register_job(context: &TestContext) {
     let payer = &context.users[0].key;
     let mint = context.mints[0].pubkey.unwrap();
     let token = context.users[0].token_accounts[0];
@@ -52,6 +58,4 @@ async fn test_basic() -> Result<(), TransportError> {
         .process_transaction(&instructions, Some(&[payer]))
         .await
         .unwrap();
-
-    Ok(())
 }
