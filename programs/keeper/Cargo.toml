@@ -7,6 +7,7 @@ edition = "2018"
 [lib]
 crate-type = ["cdylib", "lib"]
 name = "keeper"
+doctest = false
 
 [features]
 no-entrypoint = []
@@ -23,3 +24,11 @@ anchor-spl = { git = "https://github.com/microwavedcola1/anchor.git", branch = "
 
 solana-program = "^1.8.1"
 static_assertions = "1.1"
+
+[dev-dependencies]
+solana-sdk = "^1.8.1"
+solana-program-test = "^1.8.1"
+solana-logger = "^1.8.1"
+spl-token = { version = "^3.0.0", features = ["no-entrypoint"] }
+spl-associated-token-account = { version = "^1.0.3", features = ["no-entrypoint"] }
+bytemuck = "^1.7.2"

@@ -13,6 +13,7 @@ pub mod error;
 pub mod instructions;
 pub mod state;
 
+// The program address.
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
 #[program]
