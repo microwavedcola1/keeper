@@ -21,7 +21,6 @@ default = []
 anchor-lang = { git = "https://github.com/microwavedcola1/anchor.git", branch = "master-debug" }
 # todo switch to an official release before launch
 anchor-spl = { git = "https://github.com/microwavedcola1/anchor.git", branch = "master-debug", features = ["governance"]}
-
 solana-program = "^1.8.1"
 static_assertions = "1.1"
 

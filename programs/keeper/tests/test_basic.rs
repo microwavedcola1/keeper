@@ -1,13 +1,15 @@
+use core::convert::TryInto;
+use std::mem::transmute;
 use std::str::FromStr;
 
 use anchor_spl::token::TokenAccount;
-use keeper::instructions::perform_job;
 use solana_program::instruction::Instruction;
 use solana_program::pubkey::Pubkey;
 use solana_program_test::*;
 use solana_sdk::signer::keypair;
 use solana_sdk::{signature::Keypair, signer::Signer, transport::TransportError};
 
+use keeper::instructions::perform_job;
 use program_test::*;
 
 mod program_test;
@@ -48,6 +50,7 @@ async fn test_basic() -> Result<(), TransportError> {
         ),
         data: anchor_lang::InstructionData::data(&keeper::instruction::RegisterJob {
             job_bump,
+            ix_tag: 1,
             amount: 100,
         }),
     }];
@@ -68,8 +71,7 @@ async fn test_basic() -> Result<(), TransportError> {
             .to_bytes()],
         &context_argument.keeper.program_id,
     );
-    let mut cpi_data = Vec::with_capacity(1);
-    cpi_data.push(0u8);
+    let ix_tag: [u8; 4] = 1u32.to_le_bytes();
     let instructions = vec![Instruction {
         program_id: context_argument.keeper.program_id,
         accounts: anchor_lang::ToAccountMetas::to_account_metas(
@@ -83,7 +85,7 @@ async fn test_basic() -> Result<(), TransportError> {
         ),
         data: anchor_lang::InstructionData::data(&keeper::instruction::PerformJob {
             job_bump,
-            cpi_data,
+            cpi_data: ix_tag.to_vec(),
         }),
     }];
     context_argument

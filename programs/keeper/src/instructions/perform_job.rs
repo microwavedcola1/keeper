@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, TokenAccount};
 use solana_program::instruction::Instruction;
+use std::convert::TryInto;
 
 use crate::error::*;
 use crate::state::*;
@@ -30,6 +31,9 @@ pub fn perform_job<'key, 'accounts, 'remaining, 'info>(
     job_bump: u8,
     cpi_data: Vec<u8>,
 ) -> Result<()> {
+    let ix_tag = u32::from_le_bytes(cpi_data[0..4].try_into().unwrap());
+    require!(ix_tag == ctx.accounts.job.ix_tag, ErrorCode::InvalidIxTag);
+
     let mut accounts = vec![];
     let mut account_infos = vec![ctx.accounts.program.to_account_info()];
     for account in ctx.remaining_accounts.iter() {

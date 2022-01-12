@@ -1,8 +1,7 @@
+use bytemuck::{bytes_of, Contiguous};
 use solana_program::program_error::ProgramError;
 use solana_sdk::pubkey::Pubkey;
 use solana_sdk::signature::Keypair;
-
-use bytemuck::{bytes_of, Contiguous};
 
 #[allow(dead_code)]
 pub fn gen_signer_seeds<'a>(nonce: &'a u64, acc_pk: &'a Pubkey) -> [&'a [u8]; 2] {

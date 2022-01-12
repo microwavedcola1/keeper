@@ -11,7 +11,6 @@ use spl_token::{
     },
     state::Account,
 };
-
 use thiserror::Error;
 
 use crate::program_test::helpers::keeper_requiring_program::KeeperRequiringProgramError::InvalidInstruction;
@@ -63,7 +62,8 @@ impl KeeperRequiringProgramInstruction {
         let (tag, rest) = input.split_first().ok_or(InvalidInstruction)?;
 
         Ok(match tag {
-            0 => Self::Update {},
+            0 => return Err(InvalidInstruction.into()),
+            1 => Self::Update {},
             _ => return Err(InvalidInstruction.into()),
         })
     }

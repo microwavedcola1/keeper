@@ -58,9 +58,15 @@ impl<'info> RegisterJob<'info> {
     }
 }
 
-pub fn register_job(ctx: Context<RegisterJob>, job_bump: u8, amount: u64) -> Result<()> {
+pub fn register_job(
+    ctx: Context<RegisterJob>,
+    job_bump: u8,
+    ix_tag: u32,
+    amount: u64,
+) -> Result<()> {
     let job = &mut ctx.accounts.job;
     job.program = ctx.accounts.program.key();
+    job.ix_tag = ix_tag;
     transfer(ctx.accounts.transfer_ctx(), amount)?;
     Ok(())
 }

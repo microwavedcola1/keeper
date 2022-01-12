@@ -5,9 +5,6 @@ use anchor_lang::prelude::*;
 
 use error::*;
 use instructions::*;
-use state::*;
-
-use crate::instructions::*;
 
 pub mod error;
 pub mod instructions;
@@ -19,8 +16,13 @@ declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 pub mod keeper {
     use super::*;
 
-    pub fn register_job(ctx: Context<RegisterJob>, job_bump: u8, amount: u64) -> Result<()> {
-        instructions::register_job(ctx, job_bump, amount)
+    pub fn register_job(
+        ctx: Context<RegisterJob>,
+        job_bump: u8,
+        ix_tag: u32,
+        amount: u64,
+    ) -> Result<()> {
+        instructions::register_job(ctx, job_bump, ix_tag, amount)
     }
 
     pub fn perform_job<'key, 'accounts, 'remaining, 'info>(
