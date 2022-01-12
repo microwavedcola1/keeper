@@ -54,12 +54,6 @@ impl Processor {
     }
 
     fn process_update(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
-        // todo: add accounts in test
-        // let account_info_iter = &mut accounts.iter();
-        // let _ = next_account_info(account_info_iter)?;
-        // let _ = next_account_info(account_info_iter)?;
-        // let _ = next_account_info(account_info_iter)?;
-
         Ok(())
     }
 }
