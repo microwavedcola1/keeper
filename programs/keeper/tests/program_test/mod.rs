@@ -44,7 +44,8 @@ impl AddPacked for ProgramTest {
 
 pub struct TestContext {
     pub solana: Arc<SolanaCookie>,
-    pub keeper: KeeperCookie,
+    pub keeper_requiring_program: ProgramCookie,
+    pub keeper: ProgramCookie,
     pub mints: Vec<MintCookie>,
     pub users: Vec<UserCookie>,
     pub quote_index: usize,
@@ -175,7 +176,11 @@ impl TestContext {
 
         TestContext {
             solana: solana.clone(),
-            keeper: KeeperCookie {
+            keeper_requiring_program: ProgramCookie {
+                solana: solana.clone(),
+                program_id: keeper_requiring_program_id,
+            },
+            keeper: ProgramCookie {
                 solana: solana.clone(),
                 program_id: keeper_program_id,
             },

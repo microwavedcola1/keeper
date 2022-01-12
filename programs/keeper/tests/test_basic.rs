@@ -16,14 +16,14 @@ mod program_test;
 async fn test_basic() -> Result<(), TransportError> {
     let context = TestContext::new().await;
 
-    let random_program_id =
-        Pubkey::from_str("4skJ85cdxQAFVKbcGgfun8iZPL7BadVYXG3kGEGkufqA").unwrap();
     let payer = &context.users[0].key;
     let mint = context.mints[0].pubkey.unwrap();
     let token = context.users[0].token_accounts[0];
 
-    let (job, job_bump) =
-        Pubkey::find_program_address(&[&random_program_id.to_bytes()], &context.keeper.program_id);
+    let (job, job_bump) = Pubkey::find_program_address(
+        &[&context.keeper_requiring_program.program_id.to_bytes()],
+        &context.keeper.program_id,
+    );
 
     let instructions = vec![Instruction {
         program_id: context.keeper.program_id,
@@ -31,7 +31,7 @@ async fn test_basic() -> Result<(), TransportError> {
             &keeper::accounts::RegisterJob {
                 job,
                 vault: spl_associated_token_account::get_associated_token_address(&job, &mint),
-                program: random_program_id,
+                program: context.keeper_requiring_program.program_id,
                 deposit_authority: payer.pubkey(),
                 credits_mint: mint,
                 deposit_token: token,

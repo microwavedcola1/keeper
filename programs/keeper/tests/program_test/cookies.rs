@@ -8,7 +8,7 @@ use crate::solana;
 use crate::utils::*;
 
 #[derive(Clone)]
-pub struct KeeperCookie {
+pub struct ProgramCookie {
     pub solana: Arc<solana::SolanaCookie>,
     pub program_id: Pubkey,
 }
