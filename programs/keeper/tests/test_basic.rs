@@ -24,11 +24,15 @@ async fn test_basic() -> Result<(), TransportError> {
     let payer = &context_argument.users[0].key;
     let mint = context_argument.mints[0].pubkey.unwrap();
     let token = context_argument.users[0].token_accounts[0];
+    let ix_tag: [u8; 4] = 1u32.to_le_bytes();
     let (job, job_bump) = Pubkey::find_program_address(
-        &[&context_argument
-            .keeper_requiring_program
-            .program_id
-            .to_bytes()],
+        &[
+            &context_argument
+                .keeper_requiring_program
+                .program_id
+                .to_bytes(),
+            &ix_tag,
+        ],
         &context_argument.keeper.program_id,
     );
     let instructions = vec![Instruction {
@@ -64,14 +68,6 @@ async fn test_basic() -> Result<(), TransportError> {
     let context_argument = &context;
     let payer = &context_argument.users[0].key;
     let mint = context_argument.mints[0].pubkey.unwrap();
-    let (job, _) = Pubkey::find_program_address(
-        &[&context_argument
-            .keeper_requiring_program
-            .program_id
-            .to_bytes()],
-        &context_argument.keeper.program_id,
-    );
-    let ix_tag: [u8; 4] = 1u32.to_le_bytes();
     let instructions = vec![Instruction {
         program_id: context_argument.keeper.program_id,
         accounts: anchor_lang::ToAccountMetas::to_account_metas(
@@ -79,7 +75,9 @@ async fn test_basic() -> Result<(), TransportError> {
                 job,
                 vault: spl_associated_token_account::get_associated_token_address(&job, &mint),
                 program: context_argument.keeper_requiring_program.program_id,
+                keeper_token: token,
                 credits_mint: mint,
+                token_program: spl_token::id(),
             },
             None,
         ),

@@ -8,11 +8,11 @@ use crate::error::*;
 use crate::state::*;
 
 #[derive(Accounts)]
-#[instruction(job_bump: u8)]
+#[instruction(job_bump: u8, ix_tag: u32)]
 pub struct RegisterJob<'info> {
     #[account(
         init,
-        seeds = [program.key().as_ref()],
+        seeds = [program.key().as_ref(), &ix_tag.to_le_bytes()],
         bump = job_bump,
         payer = deposit_authority,
         space = 8 + size_of::<Job>()
