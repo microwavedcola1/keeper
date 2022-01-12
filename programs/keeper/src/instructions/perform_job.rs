@@ -8,6 +8,7 @@ use crate::state::*;
 
 #[derive(Accounts)]
 pub struct PerformJob<'info> {
+    #[account(has_one = program)]
     pub job: Box<Account<'info, Job>>,
 
     #[account(
