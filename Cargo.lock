@@ -1313,6 +1313,7 @@ dependencies = [
  "spl-associated-token-account",
  "spl-token",
  "static_assertions",
+ "thiserror",
 ]
 
 [[package]]

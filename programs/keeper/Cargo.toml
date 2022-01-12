@@ -32,3 +32,4 @@ solana-logger = "^1.8.1"
 spl-token = { version = "^3.0.0", features = ["no-entrypoint"] }
 spl-associated-token-account = { version = "^1.0.3", features = ["no-entrypoint"] }
 bytemuck = "^1.7.2"
+thiserror = "^1.0.24"

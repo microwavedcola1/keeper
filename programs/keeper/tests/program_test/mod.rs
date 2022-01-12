@@ -14,6 +14,7 @@ pub use solana::*;
 pub use utils::*;
 
 pub mod cookies;
+mod helpers;
 pub mod solana;
 pub mod utils;
 
@@ -153,6 +154,16 @@ impl TestContext {
                 token_accounts,
             });
         }
+
+        // Load flash loan program.
+        let keeper_requiring_program_account = Keypair::new();
+        let keeper_requiring_program_id = keeper_requiring_program_account.pubkey();
+        test.prefer_bpf(false);
+        test.add_program(
+            "keeper_requiring_program",
+            keeper_requiring_program_id.clone(),
+            processor!(helpers::keeper_requiring_program::process_instruction),
+        );
 
         let mut context = test.start_with_context().await;
         let rent = context.banks_client.get_rent().await.unwrap();
