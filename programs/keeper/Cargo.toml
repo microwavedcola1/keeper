@@ -1,0 +1,25 @@
+[package]
+name = "keeper"
+version = "0.1.0"
+description = "Created with Anchor"
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "keeper"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+# todo switch to an official release before launch
+anchor-lang = { git = "https://github.com/microwavedcola1/anchor.git", branch = "master-debug" }
+# todo switch to an official release before launch
+anchor-spl = { git = "https://github.com/microwavedcola1/anchor.git", branch = "master-debug", features = ["governance"]}
+
+solana-program = "^1.8.1"
+static_assertions = "1.1"
