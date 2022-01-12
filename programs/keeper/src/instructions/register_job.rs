@@ -67,6 +67,8 @@ pub fn register_job(
     let job = &mut ctx.accounts.job;
     job.program = ctx.accounts.program.key();
     job.ix_tag = ix_tag;
+
     transfer(ctx.accounts.transfer_ctx(), amount)?;
+
     Ok(())
 }
