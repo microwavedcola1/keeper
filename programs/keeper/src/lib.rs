@@ -16,20 +16,18 @@ declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 pub mod keeper {
     use super::*;
 
-    pub fn register_job(
-        ctx: Context<RegisterJob>,
-        job_bump: u8,
-        ix_tag: u32,
-        amount: u64,
-    ) -> Result<()> {
-        instructions::register_job(ctx, job_bump, ix_tag, amount)
+    pub fn register_job(ctx: Context<RegisterJob>, job_bump: u8, ix_tag: u32) -> Result<()> {
+        instructions::register_job(ctx, job_bump, ix_tag)
     }
 
     pub fn perform_job<'key, 'accounts, 'remaining, 'info>(
         ctx: Context<'key, 'accounts, 'remaining, 'info, PerformJob<'info>>,
-        job_bump: u8,
         cpi_data: Vec<u8>,
     ) -> Result<()> {
-        instructions::perform_job(ctx, job_bump, cpi_data)
+        instructions::perform_job(ctx, cpi_data)
+    }
+
+    pub fn withdraw_job_credit(ctx: Context<WithdrawJobCredit>, amount: u64) -> Result<()> {
+        instructions::withdraw_job_credit(ctx, amount)
     }
 }

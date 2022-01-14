@@ -26,7 +26,6 @@ pub enum KeeperRequiringProgramInstruction {
     Update {},
 }
 
-entrypoint!(process_instruction);
 pub fn process_instruction(
     program_id: &Pubkey,
     accounts: &[AccountInfo],
