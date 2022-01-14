@@ -20,6 +20,10 @@ pub mod keeper {
         instructions::register_job(ctx, job_bump, ix_tag)
     }
 
+    pub fn configure_job(ctx: Context<ConfigureJob>, execution_payout: u64) -> Result<()> {
+        instructions::configure_job(ctx, execution_payout)
+    }
+
     pub fn perform_job<'key, 'accounts, 'remaining, 'info>(
         ctx: Context<'key, 'accounts, 'remaining, 'info, PerformJob<'info>>,
         cpi_data: Vec<u8>,
