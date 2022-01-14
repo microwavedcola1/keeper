@@ -1,8 +1,6 @@
-use std::mem::size_of;
-
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token::{transfer, Mint, Token, TokenAccount, Transfer};
+use anchor_spl::token::{Mint, Token, TokenAccount};
 
 use crate::error::*;
 use crate::state::*;
@@ -12,33 +10,29 @@ use crate::state::*;
 pub struct RegisterJob<'info> {
     #[account(
         init,
-        seeds = [program.key().as_ref(), &ix_tag.to_le_bytes()],
+        // TODO: Could there be two job registrations with the same seed for different credits_mint?
+        seeds = [authority.key().as_ref(), program.key().as_ref(), &ix_tag.to_le_bytes()],
         bump = job_bump,
-        payer = deposit_authority,
-        space = 8 + size_of::<Job>()
+        payer = payer,
     )]
     pub job: Box<Account<'info, Job>>,
+
+    pub program: UncheckedAccount<'info>,
+
+    pub authority: UncheckedAccount<'info>,
+
+    pub credits_mint: Box<Account<'info, Mint>>,
 
     #[account(
         init,
         associated_token::authority = job,
         associated_token::mint = credits_mint,
-        payer = deposit_authority
+        payer = payer
     )]
     pub vault: Box<Account<'info, TokenAccount>>,
 
-    pub program: UncheckedAccount<'info>,
-
     #[account(mut)]
-    pub deposit_authority: Signer<'info>,
-
-    pub credits_mint: Box<Account<'info, Mint>>,
-
-    #[account(
-        mut,
-        constraint = deposit_token.owner == deposit_authority.key(),
-    )]
-    pub deposit_token: Box<Account<'info, TokenAccount>>,
+    pub payer: Signer<'info>,
 
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
@@ -46,30 +40,13 @@ pub struct RegisterJob<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-impl<'info> RegisterJob<'info> {
-    pub fn transfer_ctx(&self) -> CpiContext<'_, '_, '_, 'info, Transfer<'info>> {
-        let program = self.token_program.to_account_info();
-        let accounts = Transfer {
-            from: self.deposit_token.to_account_info(),
-            to: self.vault.to_account_info(),
-            authority: self.deposit_authority.to_account_info(),
-        };
-        CpiContext::new(program, accounts)
-    }
-}
-
-pub fn register_job(
-    ctx: Context<RegisterJob>,
-    job_bump: u8,
-    ix_tag: u32,
-    amount: u64,
-) -> Result<()> {
+pub fn register_job(ctx: Context<RegisterJob>, job_bump: u8, ix_tag: u32) -> Result<()> {
     let job = &mut ctx.accounts.job;
     job.program = ctx.accounts.program.key();
     job.credits_mint = ctx.accounts.credits_mint.key();
+    job.authority = ctx.accounts.authority.key();
     job.ix_tag = ix_tag;
-
-    transfer(ctx.accounts.transfer_ctx(), amount)?;
+    job.bump = job_bump;
 
     Ok(())
 }

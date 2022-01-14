@@ -45,7 +45,6 @@ impl<'info> PerformJob<'info> {
 
 pub fn perform_job<'key, 'accounts, 'remaining, 'info>(
     ctx: Context<'key, 'accounts, 'remaining, 'info, PerformJob<'info>>,
-    job_bump: u8,
     cpi_data: Vec<u8>,
 ) -> Result<()> {
     // verify job instruction tag
@@ -73,8 +72,7 @@ pub fn perform_job<'key, 'accounts, 'remaining, 'info>(
     )?;
 
     // transfer credits
-    let program = &mut ctx.accounts.program;
-    let seeds = &[program.key.as_ref(), &ix_tag.to_le_bytes(), &[job_bump]];
+    let seeds = job_seeds!(&ctx.accounts.job);
     transfer(ctx.accounts.transfer_ctx().with_signer(&[seeds]), 1)?;
 
     Ok(())
