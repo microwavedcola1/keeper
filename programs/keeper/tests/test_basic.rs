@@ -61,6 +61,20 @@ async fn test_basic() -> Result<(), TransportError> {
                 ix_tag: 1,
             }),
         },
+        // Configure new job
+        Instruction {
+            program_id: context_argument.keeper.program_id,
+            accounts: anchor_lang::ToAccountMetas::to_account_metas(
+                &keeper::accounts::ConfigureJob {
+                    job,
+                    authority: authority.pubkey(),
+                },
+                None,
+            ),
+            data: anchor_lang::InstructionData::data(&keeper::instruction::ConfigureJob {
+                execution_payout: 1,
+            }),
+        },
         // Fund the newly created vault with 100 tokens
         spl_token::instruction::transfer(
             &spl_token::ID,
@@ -74,7 +88,7 @@ async fn test_basic() -> Result<(), TransportError> {
     ];
     context_argument
         .solana
-        .process_transaction(&instructions, Some(&[payer]))
+        .process_transaction(&instructions, Some(&[payer, &authority]))
         .await
         .unwrap();
 

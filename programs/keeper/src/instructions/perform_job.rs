@@ -47,9 +47,11 @@ pub fn perform_job<'key, 'accounts, 'remaining, 'info>(
     ctx: Context<'key, 'accounts, 'remaining, 'info, PerformJob<'info>>,
     cpi_data: Vec<u8>,
 ) -> Result<()> {
+    require!(ctx.accounts.job.is_configured, JobNotConfigured);
+
     // verify job instruction tag
     let ix_tag = u32::from_le_bytes(cpi_data[0..4].try_into().unwrap());
-    require!(ix_tag == ctx.accounts.job.ix_tag, ErrorCode::InvalidIxTag);
+    require!(ix_tag == ctx.accounts.job.ix_tag, InvalidIxTag);
 
     // perform job via cpi
     let mut accounts = vec![];
@@ -72,8 +74,12 @@ pub fn perform_job<'key, 'accounts, 'remaining, 'info>(
     )?;
 
     // transfer credits
-    let seeds = job_seeds!(&ctx.accounts.job);
-    transfer(ctx.accounts.transfer_ctx().with_signer(&[seeds]), 1)?;
+    let job = &ctx.accounts.job;
+    let seeds = job_seeds!(job);
+    transfer(
+        ctx.accounts.transfer_ctx().with_signer(&[seeds]),
+        job.execution_payout,
+    )?;
 
     Ok(())
 }

@@ -12,12 +12,16 @@ pub struct Job {
     // to decode incoming ix data as they see fit, it doesnt need to be first 4 bytes, though
     // that is the convention
     pub ix_tag: u32,
+
+    pub execution_payout: u64,
+    pub is_configured: bool,
+
     pub bump: u8,
 
     // TODO: padding size
-    padding: [u8; 3],
+    padding: [u8; 2],
 }
-const_assert!(size_of::<Job>() == 3 * 32 + 4 + 1 + 3);
+const_assert!(size_of::<Job>() == 3 * 32 + 4 + 8 + 1 + 1 + 2);
 
 #[macro_export]
 macro_rules! job_seeds {
